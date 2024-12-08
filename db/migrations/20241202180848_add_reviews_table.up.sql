@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS reviews (
     id bigserial PRIMARY KEY,
-    product_id bigint NOT NULL REFERENCES Product(id),
+    product_id bigint NOT NULL REFERENCES product(id),
     user_id bigint NOT NULL,
     rating int NOT NULL CHECK (rating >= 1 AND rating <= 5),
     comment text,

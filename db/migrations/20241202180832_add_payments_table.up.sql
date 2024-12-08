@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS payments (
     id bigserial PRIMARY KEY,
-    order_id bigint NOT NULL REFERENCES "Order"(id),
+    order_id bigint NOT NULL REFERENCES orders(id),
     payment_method varchar(50) NOT NULL,
     amount numeric(10, 2) NOT NULL,
     status varchar(50) NOT NULL,
