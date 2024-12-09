@@ -6,8 +6,8 @@ import (
 
 type User struct {
 	ID        int64     `gorm:"primaryKey;autoIncrement" json:"id"`
-	CreatedAt time.Time `gorm:"type:timestamp with time zone;default:now()" json:"createdAt"`
-	UpdatedAt time.Time `gorm:"type:timestamp with time zone;default:now()" json:"updatedAt"`
+	CreatedAt time.Time `gorm:"type:timestamp with time zone;default:now()" json:"created_at"`
+	UpdatedAt time.Time `gorm:"type:timestamp with time zone;default:now()" json:"updated_at"`
 	Username  string    `gorm:"size:50;not null" json:"username"`
 	Email     string    `gorm:"size:50;not null" json:"email"`
 	Password  string    `gorm:"size:50;not null" json:"password"`

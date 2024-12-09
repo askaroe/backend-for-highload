@@ -6,42 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateUser(c *gin.Context) {
-	// Getting data from request body
-	var reqBody struct {
-		Username  string `json:"username"`
-		Firstname string `json:"firstName"`
-		Lastname  string `json:"lastName"`
-		Email     string `json:"email"`
-		Password  string `json:"password"`
-	}
-
-	err := c.Bind(&reqBody)
-	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid request data"})
-		return
-	}
-
-	// Create a new user
-	user := models.User{
-		Username:  reqBody.Username,
-		FirstName: reqBody.Firstname,
-		LastName:  reqBody.Lastname,
-		Email:     reqBody.Email,
-		Password:  reqBody.Password,
-	}
-
-	result := gorm.DB.Create(&user)
-	if result.Error != nil {
-		c.JSON(500, gin.H{"error": "Failed to create user"})
-		return
-	}
-
-	c.JSON(201, gin.H{
-		"user": user,
-	})
-}
-
 func GetAllUsers(c *gin.Context) {
 	var users []models.User
 	result := gorm.DB.Find(&users)

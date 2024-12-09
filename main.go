@@ -38,13 +38,15 @@ func main() {
 
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
+	r.POST("/api/auth/login", handlers.Login)
+	r.POST("/api/auth/register", handlers.Register)
+
 	api := r.Group("api/v1")
+	api.Use(middleware.JWTMiddleware())
 	{
 		// Users Routes
 		api.GET("/users", handlers.GetAllUsers)
 		api.GET("/users/:user_id", handlers.GetUserById)
-		api.POST("/users", handlers.CreateUser)
-		api.PUT("/users/:user_id", handlers.UpdateUser)
 		api.DELETE("/users/:user_id", handlers.DeleteUser)
 
 		// Products Routes
