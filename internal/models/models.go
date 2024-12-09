@@ -15,6 +15,10 @@ type User struct {
 	LastName  string    `gorm:"size:50" json:"lastName"`
 }
 
+func (User) TableName() string {
+	return "users"
+}
+
 type Product struct {
 	ID            int64     `gorm:"primaryKey;autoIncrement" json:"id"`
 	Name          string    `gorm:"size:100;not null" json:"name"`
@@ -32,6 +36,10 @@ type Product struct {
 	CartItems     []CartItem     `gorm:"foreignKey:ProductID" json:"cartItems"`
 }
 
+func (Product) TableName() string {
+	return "product"
+}
+
 type Category struct {
 	ID        int64     `gorm:"primaryKey;autoIncrement" json:"id"`
 	Name      string    `gorm:"size:100;not null" json:"name"`
@@ -40,6 +48,10 @@ type Category struct {
 	UpdatedAt time.Time `gorm:"type:timestamp with time zone;default:now()" json:"updatedAt"`
 	Parent    *Category `gorm:"foreignKey:ParentID" json:"parent"`
 	Products  []Product `gorm:"foreignKey:CategoryID" json:"products"`
+}
+
+func (Category) TableName() string {
+	return "category"
 }
 
 type Order struct {
@@ -55,6 +67,10 @@ type Order struct {
 	Payments   []Payment   `gorm:"foreignKey:OrderID" json:"payments"`
 }
 
+func (Order) TableName() string {
+	return "orders"
+}
+
 type OrderItem struct {
 	ID        int64     `gorm:"primaryKey;autoIncrement" json:"id"`
 	OrderID   int64     `gorm:"not null" json:"orderId"`
@@ -68,6 +84,10 @@ type OrderItem struct {
 	Product Product `gorm:"foreignKey:ProductID" json:"product"`
 }
 
+func (OrderItem) TableName() string {
+	return "orderitems"
+}
+
 type ShoppingCart struct {
 	ID        int64     `gorm:"primaryKey;autoIncrement" json:"id"`
 	UserID    int64     `gorm:"not null" json:"userId"`
@@ -76,6 +96,10 @@ type ShoppingCart struct {
 
 	User      User       `gorm:"foreignKey:UserID" json:"user"`
 	CartItems []CartItem `gorm:"foreignKey:CartID" json:"cartItems"`
+}
+
+func (ShoppingCart) TableName() string {
+	return "shoppingcart"
 }
 
 type CartItem struct {
@@ -90,6 +114,10 @@ type CartItem struct {
 	Product Product      `gorm:"foreignKey:ProductID" json:"product"`
 }
 
+func (CartItem) TableName() string {
+	return "cartitems"
+}
+
 type Payment struct {
 	ID            int64     `gorm:"primaryKey;autoIncrement" json:"id"`
 	OrderID       int64     `gorm:"not null" json:"orderId"`
@@ -100,6 +128,10 @@ type Payment struct {
 	UpdatedAt     time.Time `gorm:"type:timestamp with time zone;default:now()" json:"updatedAt"`
 
 	Order Order `gorm:"foreignKey:OrderID" json:"order"`
+}
+
+func (Payment) TableName() string {
+	return "payments"
 }
 
 type Review struct {
@@ -115,6 +147,10 @@ type Review struct {
 	User    User    `gorm:"foreignKey:UserID" json:"user"`
 }
 
+func (Review) TableName() string {
+	return "reviews"
+}
+
 type Wishlist struct {
 	ID        int64     `gorm:"primaryKey;autoIncrement" json:"id"`
 	UserID    int64     `gorm:"not null" json:"userId"`
@@ -125,6 +161,10 @@ type Wishlist struct {
 	WishListItems []WishListItem `gorm:"foreignKey:WishlistID" json:"wishListItems"`
 }
 
+func (Wishlist) TableName() string {
+	return "wichlists"
+}
+
 type WishListItem struct {
 	ID         int64     `gorm:"primaryKey;autoIncrement" json:"id"`
 	WishlistID int64     `gorm:"not null" json:"wishlistId"`
@@ -133,4 +173,8 @@ type WishListItem struct {
 
 	Wishlist Wishlist `gorm:"foreignKey:WishlistID" json:"wishlist"`
 	Product  Product  `gorm:"foreignKey:ProductID" json:"product"`
+}
+
+func (WishListItem) TableName() string {
+	return "wishlistitem"
 }
