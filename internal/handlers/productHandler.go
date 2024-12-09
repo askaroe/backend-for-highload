@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/alinadsm04/backend-for-highload/internal/models"
 	"github.com/alinadsm04/backend-for-highload/internal/storage/cache"
 	"github.com/alinadsm04/backend-for-highload/internal/storage/gorm"
@@ -56,7 +57,7 @@ func GetAllProducts(c *gin.Context) {
 
 	// Check if products are cached
 	cachedProducts, err := cache.Rdb.Get(ctx, "products_list").Result()
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		// Cache miss, fetch from DB
 		var products []models.Product
 		result := gorm.DB.Preload("Category").Find(&products)

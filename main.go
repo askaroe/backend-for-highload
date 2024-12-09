@@ -3,16 +3,23 @@ package main
 import (
 	"context"
 	"github.com/alinadsm04/backend-for-highload/internal/handlers"
+	"github.com/alinadsm04/backend-for-highload/internal/middleware"
 	"github.com/alinadsm04/backend-for-highload/internal/storage/cache"
 	"github.com/alinadsm04/backend-for-highload/internal/storage/gorm"
+	"github.com/alinadsm04/backend-for-highload/internal/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log"
+	"os"
 )
 
 var logger log.Logger
 
 func main() {
 	ctx := context.Background()
+
+	logger := log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
+
 	logger.Println("connecting to db...")
 	gorm.ConnectToDb()
 	logger.Println("connected to db")
@@ -21,11 +28,18 @@ func main() {
 	cache.ConnectToRedis(ctx)
 	logger.Println("connected to Redis")
 
+	logger.Println("initializing prometheus")
+	utils.InitPrometheus()
+	logger.Println("initializing prometheus")
+
 	r := gin.Default()
+
+	r.Use(middleware.MetricsMiddleware())
+
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	api := r.Group("api/v1")
 	{
-		// Users
 		// Users Routes
 		api.GET("/users", handlers.GetAllUsers)
 		api.GET("/users/:user_id", handlers.GetUserById)

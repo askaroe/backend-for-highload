@@ -9,8 +9,8 @@ var Rdb *redis.Client
 
 func ConnectToRedis(ctx context.Context) {
 	Rdb = redis.NewClient(&redis.Options{
-		Addr: "localhost:6379", // Redis address
-		DB:   0,                // Default DB
+		Addr: "redis:6379",
+		DB:   0,
 	})
 	_, err := Rdb.Ping(ctx).Result()
 	if err != nil {
