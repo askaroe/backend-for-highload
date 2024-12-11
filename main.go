@@ -120,7 +120,7 @@ func main() {
 		api.DELETE("/wishlistitems/:wishlistitem_id", handlers.DeleteWishListItem)
 	}
 
-	err := r.Run()
+	err := r.Run(":8000")
 	if err != nil {
 		log.Fatal("error starting server: " + err.Error())
 		return

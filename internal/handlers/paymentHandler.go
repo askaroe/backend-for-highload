@@ -1,9 +1,13 @@
 package handlers
 
 import (
+	"encoding/json"
+	"github.com/IBM/sarama"
 	"github.com/alinadsm04/backend-for-highload/internal/models"
 	"github.com/alinadsm04/backend-for-highload/internal/storage/gorm"
 	"github.com/gin-gonic/gin"
+	"log"
+	"net/http"
 )
 
 func CreatePayment(c *gin.Context) {
@@ -15,8 +19,7 @@ func CreatePayment(c *gin.Context) {
 		Status        string  `json:"status"`
 	}
 
-	err := c.Bind(&reqBody)
-	if err != nil {
+	if err := c.Bind(&reqBody); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid request data"})
 		return
 	}
@@ -29,15 +32,39 @@ func CreatePayment(c *gin.Context) {
 		Status:        reqBody.Status,
 	}
 
-	result := gorm.DB.Create(&payment)
-	if result.Error != nil {
-		c.JSON(500, gin.H{"error": "Failed to create payment"})
+	brokers := []string{"broker01:9092"}
+	topic := "payments"
+
+	config := sarama.NewConfig()
+	config.Producer.Return.Successes = true
+
+	// Initialize producer
+	producer, err := sarama.NewSyncProducer(brokers, config)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to start Kafka producer"})
+		return
+	}
+	defer producer.Close()
+
+	data, err := json.Marshal(payment)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error marshalling payment data"})
 		return
 	}
 
-	c.JSON(201, gin.H{
-		"payment": payment,
-	})
+	message := &sarama.ProducerMessage{
+		Topic: topic,
+		Value: sarama.ByteEncoder(data),
+	}
+
+	partition, offset, err := producer.SendMessage(message)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send message to Kafka " + err.Error()})
+		return
+	}
+
+	log.Printf("Message sent to partition %d at offset %d\n", partition, offset)
+	c.JSON(200, gin.H{"message": "Payment created and sent to Kafka, check consumer"})
 }
 
 func GetAllPayments(c *gin.Context) {
